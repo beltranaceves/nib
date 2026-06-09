@@ -42,25 +42,141 @@ button {
     overflow: hidden;
 }
 
+/* ── Menu Bar (desktop-native style) ── */
 .menubar {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: 1rem;
-    min-height: 2.75rem;
-    padding: 0 1rem;
-    background: rgba(15, 23, 42, 0.92);
-    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
-    backdrop-filter: blur(18px);
+    min-height: 2.25rem;
+    padding: 0;
+    background: rgba(11, 17, 32, 0.96);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .app-name {
     font-weight: 700;
+    font-size: 0.85rem;
     letter-spacing: 0.04em;
+    color: #94a3b8;
+    padding: 0 1rem;
+    min-width: 2.5rem;
+}
+
+.menu-row {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+    gap: 0;
+}
+
+.menu-container {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+
+.menu-trigger {
+    cursor: pointer;
+    border: 0;
+    border-radius: 0;
+    color: #cbd5e1;
+    background: transparent;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.82rem;
+    font-family: inherit;
+    transition: background 0.1s ease, color 0.1s ease;
+    white-space: nowrap;
+}
+
+.menu-trigger:hover {
+    background: rgba(148, 163, 184, 0.12);
+    color: #f1f5f9;
+}
+
+.menu-trigger.active {
+    background: rgba(148, 163, 184, 0.14);
     color: #f8fafc;
 }
 
-.menu-group,
+.menu-trigger:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+/* ── Dropdown ── */
+.menu-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 13rem;
+    padding: 0.35rem;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 0 0 10px 10px;
+    background: rgba(15, 23, 42, 0.98);
+    box-shadow: 0 12px 40px rgba(2, 6, 23, 0.5);
+    z-index: 100;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    border: 0;
+    border-radius: 6px;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.82rem;
+    font-family: inherit;
+    color: #e2e8f0;
+    background: transparent;
+    gap: 2rem;
+}
+
+.menu-item:hover:not(:disabled) {
+    background: rgba(59, 130, 246, 0.22);
+    color: #f8fafc;
+}
+
+.menu-item:disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+}
+
+.menu-item-label {
+    flex: 1;
+    white-space: nowrap;
+}
+
+.menu-item-shortcut {
+    color: #64748b;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+}
+
+.menu-item:hover:not(:disabled) .menu-item-shortcut {
+    color: #94a3b8;
+}
+
+.menu-separator {
+    height: 1px;
+    margin: 0.3rem 0.5rem;
+    background: rgba(148, 163, 184, 0.12);
+}
+
+.menu-status {
+    color: #64748b;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 1rem;
+    text-align: right;
+}
+
 .explorer-actions,
 .editor-actions {
     display: flex;
@@ -69,14 +185,7 @@ button {
     flex-wrap: wrap;
 }
 
-.menu-status {
-    color: #94a3b8;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
+/* ── Shared button style for panels ── */
 .menu-button {
     cursor: pointer;
     border-radius: 10px;
