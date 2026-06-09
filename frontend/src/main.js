@@ -1,8 +1,11 @@
 import './style.css'
 import App from './App.svelte'
 
+const target = document.getElementById('app')
+if (!target) throw new Error('App target element with id "app" not found')
+
 const app = new App({
-  target: document.getElementById('app')
+  target
 })
 
 export default app
