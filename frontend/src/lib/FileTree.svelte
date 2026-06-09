@@ -11,7 +11,7 @@
     showContextMenu,
     createFile,
     createFolder,
-  } from './stores.js'
+  } from './file-tree.js'
 
   function rowClass(entry) {
     return [

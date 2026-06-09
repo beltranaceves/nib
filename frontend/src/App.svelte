@@ -1,10 +1,6 @@
 <script>
-  import {
-    hideContextMenu,
-    handleWindowKeydown,
-    sidebarWidth,
-    activeSidebarView,
-  } from './lib/stores.js'
+  import { sidebarWidth, activeSidebarView } from './lib/stores.js'
+  import { hideContextMenu, handleWindowKeydown } from './lib/file-tree.js'
   import Menubar from './lib/Menubar.svelte'
   import ActivityBar from './lib/ActivityBar.svelte'
   import FileTree from './lib/FileTree.svelte'
@@ -29,9 +25,13 @@
   function focusActivityIcon() {
     requestAnimationFrame(() => {
       const view = $activeSidebarView
-      const sel = view
-        ? `.activity-icon[title="${view.charAt(0).toUpperCase() + view.slice(1)}"]`
-        : '.activity-icon'
+      if (!view) {
+        // Sidebar closed — focus the editor
+        const editor = document.querySelector('.editor')
+        if (editor) editor.focus()
+        return
+      }
+      const sel = `.activity-icon[title="${view.charAt(0).toUpperCase() + view.slice(1)}"]`
       const btn = document.querySelector(sel)
       if (btn) btn.focus()
     })

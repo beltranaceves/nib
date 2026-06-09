@@ -1,6 +1,6 @@
 <script>
   import { contextMenu } from './stores.js'
-  import { openContextAction } from './stores.js'
+  import { openContextAction } from './file-tree.js'
 </script>
 
 {#if $contextMenu}

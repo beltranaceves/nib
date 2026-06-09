@@ -12,7 +12,7 @@
     createFile,
     createFolder,
     saveFile,
-  } from './stores.js'
+  } from './file-tree.js'
 </script>
 
 <header class="menubar">

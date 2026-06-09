@@ -7,7 +7,7 @@
     busy,
     statusMessage,
   } from './stores.js'
-  import { saveFile } from './stores.js'
+  import { saveFile } from './file-tree.js'
 </script>
 
 <section class="editor-shell">
