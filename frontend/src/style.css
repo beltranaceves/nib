@@ -1,13 +1,14 @@
 html {
-    background-color: rgba(27, 38, 54, 1);
-    text-align: center;
-    color: white;
+    background:
+        radial-gradient(circle at top left, rgba(51, 65, 85, 0.35), transparent 32%),
+        linear-gradient(135deg, #0b1020 0%, #111827 48%, #0f172a 100%);
+    color: #e5e7eb;
 }
 
 body {
     margin: 0;
-    color: white;
-    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    color: #e5e7eb;
+    font-family: "Inter", "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
 }
@@ -22,5 +23,277 @@ body {
 
 #app {
     height: 100vh;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    border: 0;
+}
+
+.workspace {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.menubar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    background: rgba(15, 23, 42, 0.92);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    backdrop-filter: blur(18px);
+}
+
+.app-name {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #f8fafc;
+}
+
+.menu-group,
+.explorer-actions,
+.editor-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.menu-status {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.menu-button {
+    cursor: pointer;
+    border-radius: 10px;
+    color: #e2e8f0;
+    background: rgba(30, 41, 59, 0.92);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    padding: 0.6rem 0.9rem;
+    transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.menu-button:hover {
+    transform: translateY(-1px);
+    background: rgba(51, 65, 85, 0.96);
+    border-color: rgba(96, 165, 250, 0.35);
+}
+
+.menu-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+    transform: none;
+}
+
+.menu-button.compact {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.8rem;
+}
+
+.shell {
+    min-height: 0;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    overflow: hidden;
+}
+
+.sidebar,
+.editor-shell {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar {
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.9);
+    border-right: 1px solid rgba(148, 163, 184, 0.16);
+    backdrop-filter: blur(18px);
+}
+
+.explorer-panel,
+.editor-shell {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.68);
+    box-shadow: 0 20px 60px rgba(2, 6, 23, 0.28);
+    overflow: hidden;
+}
+
+.explorer-panel {
+    flex: 1;
+}
+
+.explorer-header,
+.editor-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1rem 0.75rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.panel-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
+    margin-bottom: 0.35rem;
+}
+
+.project-path,
+.editor-path,
+.editor-status,
+.empty-tree,
+.editor-empty {
+    color: #94a3b8;
+    font-size: 0.92rem;
+}
+
+.editor-status {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.editor-status .dirty {
+    color: #fbbf24;
+}
+
+.tree-body {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 0.5rem 0.4rem 0.8rem;
+}
+
+.tree-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    margin-bottom: 0.1rem;
+    color: #e2e8f0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.tree-row:hover {
+    background: rgba(148, 163, 184, 0.08);
+}
+
+.tree-row.is-selected {
+    background: rgba(59, 130, 246, 0.18);
+}
+
+.tree-glyph {
+    width: 1rem;
+    flex: 0 0 1rem;
     text-align: center;
+    color: #60a5fa;
+}
+
+.tree-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.empty-tree {
+    padding: 1rem 0.4rem;
+}
+
+.editor-shell {
+    margin: 1rem 1rem 1rem 0;
+}
+
+.editor {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    resize: none;
+    border: 0;
+    outline: none;
+    padding: 1rem;
+    background: transparent;
+    color: #e2e8f0;
+    line-height: 1.65;
+    font-size: 1rem;
+    font-family: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.editor-empty {
+    margin: auto;
+    max-width: 28rem;
+    text-align: center;
+    padding: 2rem;
+}
+
+.context-menu {
+    position: fixed;
+    z-index: 50;
+    min-width: 13rem;
+    padding: 0.4rem;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    background: rgba(15, 23, 42, 0.98);
+    box-shadow: 0 18px 60px rgba(2, 6, 23, 0.42);
+    backdrop-filter: blur(18px);
+}
+
+.context-item {
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 0.65rem 0.75rem;
+    color: #e2e8f0;
+    background: transparent;
+}
+
+.context-item:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.context-item.danger {
+    color: #fecaca;
+}
+
+@media (max-width: 900px) {
+    .shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: 340px minmax(0, 1fr);
+    }
+
+    .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .editor-shell {
+        margin: 0 1rem 1rem;
+    }
 }
