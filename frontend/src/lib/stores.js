@@ -16,6 +16,21 @@ export const busy = writable(false)
 export const statusMessage = writable('Open a project to start.')
 export const contextMenu = writable(null)
 
+// ── Active sidebar view ──
+// Which panel is shown in the side panel: 'explorer' | 'blank' | null
+export const activeSidebarView = writable('explorer')
+
+// ── Layout ──
+const savedWidth = typeof localStorage !== 'undefined'
+  ? parseInt(localStorage.getItem('nib:sidebarWidth') || '300', 10)
+  : 300
+export const sidebarWidth = writable(Math.max(200, Math.min(600, savedWidth)))
+sidebarWidth.subscribe(val => {
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('nib:sidebarWidth', String(val))
+  }
+})
+
 // ── Path utilities ──
 export function normalizePath(path) {
   return (path || '').replace(/\\/g, '/')
@@ -423,5 +438,6 @@ export function handleWindowKeydown(event) {
   ) {
     event.preventDefault()
     createProjectFromPicker()
+    return
   }
 }
