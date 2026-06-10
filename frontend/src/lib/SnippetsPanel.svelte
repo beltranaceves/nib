@@ -3,8 +3,7 @@
     projectRoot, selectedPath, selectedIsDir,
     snippets, frontmatterTitle, frontmatterTags, busy,
   } from './stores.js'
-
-  let captureInput = ''
+  import CaptureRow from './CaptureRow.svelte'
 
   function api() { return (/** @type {any} */ (window))?.go?.main?.App }
 
@@ -19,31 +18,29 @@
     } catch { clear() }
   }
 
-  async function handleAdd() {
-    if (!captureInput.trim()) return
-    await api().AddSnippet($selectedPath, captureInput.trim())
-    captureInput = ''
-    await reloadSnippets()
-  }
-
   async function removeAt(i) {
     await api().RemoveSnippet($selectedPath, i)
     await reloadSnippets()
   }
 
   let editingIndex = -1
+  let editValue = ''
 
-  function saveEdit(i, val) {
+  function beginEdit(i, current) {
+    editingIndex = i
+    editValue = current
+  }
+
+  function saveEdit(i) {
     if (editingIndex !== i) return
     editingIndex = -1
-    const t = val.trim()
+    const t = editValue.trim()
     if (!t) return
     api().UpdateSnippet($selectedPath, i, t).then(reloadSnippets)
   }
 
-  function captureKeydown(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAdd() }
-    if (e.key === 'Escape') { captureInput = ''; e.target.blur() }
+  function cancelEdit() {
+    editingIndex = -1
   }
 
   $: hasProject = !!$projectRoot
@@ -57,12 +54,7 @@
   </div>
 
   {#if hasProject}
-    <div class="capture-row">
-      <textarea class="capture-input" rows="2" bind:value={captureInput}
-        placeholder={hasMd ? 'Write a snippet…' : 'Open a .md file first'}
-        disabled={!hasMd || $busy} on:keydown={captureKeydown} spellcheck="false" />
-      <button class="capture-btn" disabled={!hasMd || $busy || !captureInput.trim()} on:click={handleAdd}>Add</button>
-    </div>
+    <CaptureRow on:snippetadded={reloadSnippets} />
   {/if}
 
   <div class="snippets-body">
@@ -87,15 +79,15 @@
           }} role="button" tabindex="0">
           {#if editingIndex === i}
             <!-- svelte-ignore a11y-autofocus -->
-            <input class="edit-input" type="text" value={snippet}
+            <input class="edit-input" type="text" bind:value={editValue}
               on:keydown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEdit(i, e.target.value) }
-                if (e.key === 'Escape') { e.preventDefault(); editingIndex = -1 }
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEdit(i) }
+                if (e.key === 'Escape') { e.preventDefault(); cancelEdit() }
               }}
-              on:blur={(e) => saveEdit(i, e.target.value)} autofocus spellcheck="false" />
+              on:blur={() => saveEdit(i)} autofocus spellcheck="false" />
           {:else}
-            <span class="snippet-text" on:click={() => editingIndex = i}
-              on:keydown={(e) => { if (e.key === 'Enter') editingIndex = i }}
+            <span class="snippet-text" on:click={() => beginEdit(i, snippet)}
+              on:keydown={(e) => { if (e.key === 'Enter') beginEdit(i, snippet) }}
               role="button" tabindex="-1">{snippet}</span>
           {/if}
           <button class="delete-btn" on:click={() => removeAt(i)} disabled={$busy}>×</button>
@@ -107,22 +99,25 @@
 
 <style>
   .snippets-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
-  .panel-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(148,163,184,0.12); }
-  .panel-title { font-weight: 600; color: #e2e8f0; }
-  .panel-meta { color: #94a3b8; font-size: 0.82rem; }
-  .capture-row { display: flex; gap: 0.4rem; padding: 0.6rem 0.8rem; border-bottom: 1px solid rgba(148,163,184,0.08); }
-  .capture-input { flex: 1; padding: 0.5rem; border: 1px solid rgba(148,163,184,0.2); border-radius: 8px; background: rgba(30,41,59,0.7); color: #e2e8f0; font-size: 0.85rem; resize: none; font-family: inherit; line-height: 1.5; outline: none; }
-  .capture-input:focus { border-color: rgba(96,165,250,0.5); }
-  .capture-btn { flex: 0 0 auto; align-self: flex-start; }
-  .snippets-body { flex: 1; overflow: auto; padding: 0.5rem; }
-  .snippet-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0.5rem; border-radius: 8px; color: #e2e8f0; }
-  .snippet-row:hover { background: rgba(148,163,184,0.08); }
-  .snippet-row.editing { background: rgba(148,163,184,0.05); }
-  .snippet-text { flex: 1; font-size: 0.88rem; line-height: 1.4; word-break: break-word; cursor: text; padding: 0.2rem 0; }
-  .edit-input { flex: 1; padding: 0.3rem 0.5rem; border: 1px solid rgba(96,165,250,0.5); border-radius: 6px; background: rgba(30,41,59,0.9); color: #e2e8f0; font-size: 0.88rem; font-family: inherit; outline: none; }
-  .delete-btn { cursor: pointer; border: 0; border-radius: 6px; background: transparent; color: #64748b; font-size: 1.1rem; padding: 0.2rem 0.35rem; opacity: 0; }
+  .panel-header { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.75rem 0.55rem; border-bottom: 1px solid rgba(148,163,184,0.1); }
+  .panel-title { font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; }
+  .panel-meta { color: #64748b; font-size: 0.75rem; }
+  .snippets-body { flex: 1; overflow: auto; padding: 0.25rem 0.35rem; }
+  .snippet-row { display: flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.4rem; border-radius: 4px; color: #e2e8f0; cursor: default; }
+  .snippet-row:hover { background: rgba(148,163,184,0.07); }
+  .snippet-row.editing { background: rgba(96,165,250,0.06); }
+  .snippet-text { flex: 1; font-size: 0.82rem; line-height: 1.5; word-break: break-word; cursor: text; padding: 0.15rem 0; color: #cbd5e1; }
+  .snippet-row:hover .snippet-text { color: #e2e8f0; }
+  .edit-input { flex: 1; min-width: 0; padding: 0.25rem 0.4rem; border: 1px solid #60a5fa; border-radius: 4px; background: rgba(15,23,42,0.85); color: #e2e8f0; font-size: 0.82rem; font-family: inherit; outline: none; box-shadow: 0 0 0 1px rgba(96,165,250,0.3); }
+  .delete-btn {
+    cursor: pointer; border: 0; border-radius: 4px;
+    background: transparent; color: #475569;
+    font-size: 1rem; line-height: 1;
+    padding: 0.15rem 0.25rem; opacity: 0;
+    transition: background 0.1s ease, color 0.1s ease, opacity 0.1s ease;
+  }
   .snippet-row:hover .delete-btn, .snippet-row.editing .delete-btn { opacity: 1; }
   .delete-btn:hover:not(:disabled) { color: #f87171; background: rgba(248,113,113,0.12); }
-  .delete-btn:disabled { cursor: not-allowed; opacity: 0.3; }
-  .empty { color: #64748b; font-size: 0.85rem; text-align: center; padding: 1.5rem 0.5rem; }
+  .delete-btn:disabled { cursor: not-allowed; opacity: 0.2; }
+  .empty { color: #475569; font-size: 0.8rem; text-align: center; padding: 1.2rem 0.5rem; }
 </style>

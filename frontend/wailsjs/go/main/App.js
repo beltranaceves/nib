@@ -14,10 +14,6 @@ export function CreateFile(arg1) {
   return window['go']['main']['App']['CreateFile'](arg1);
 }
 
-export function CreateProject(arg1) {
-  return window['go']['main']['App']['CreateProject'](arg1);
-}
-
 export function DeletePath(arg1) {
   return window['go']['main']['App']['DeletePath'](arg1);
 }

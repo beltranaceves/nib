@@ -156,35 +156,6 @@ export async function openProjectFromPicker() {
   }
 }
 
-export async function createProjectFromPicker() {
-  busy.set(true)
-  try {
-    const parentFolder = await ensureAppApi().PickProjectFolder(
-      'Choose a folder for the new project'
-    )
-    if (!parentFolder) {
-      statusMessage.set('New project cancelled.')
-      return
-    }
-    const projectName = window.prompt('Project name', 'micro-essays')?.trim()
-    if (!projectName) {
-      statusMessage.set('New project cancelled.')
-      return
-    }
-    const root = await ensureAppApi().CreateProject(
-      joinPath(parentFolder, projectName)
-    )
-    projectRoot.set(root)
-    resetWorkspaceState()
-    await refreshTree()
-    statusMessage.set(`Created project: ${root}`)
-  } catch (error) {
-    statusMessage.set(String(error))
-  } finally {
-    busy.set(false)
-  }
-}
-
 /** @param {Entry} entry */
 export async function openEntry(entry) {
   selectEntry(entry)

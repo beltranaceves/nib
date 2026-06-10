@@ -21,6 +21,14 @@
       $expandedFolders.includes(entry.path) ? 'is-open' : '',
     ].join(' ')
   }
+
+  /** "projects/foo/bar" → "bar"; "very-long-directory-name" → "very-long-direc…" */
+  function projectDisplayName(root) {
+    if (!root) return ''
+    let name = root.replace(/[/\\]+$/, '').split(/[/\\]/).pop() || root
+    if (name.length > 24) name = name.slice(0, 21) + '…'
+    return name
+  }
 </script>
 
 <section class="explorer-panel">
@@ -28,7 +36,7 @@
     <div>
       <div class="panel-title">Explorer</div>
       <div class="project-path">
-        {$projectRoot || 'Open a folder to begin'}
+        {$projectRoot ? projectDisplayName($projectRoot) : 'Open a folder to begin'}
       </div>
     </div>
 

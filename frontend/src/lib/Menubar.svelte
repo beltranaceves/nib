@@ -8,7 +8,6 @@
   } from './stores.js'
   import {
     openProjectFromPicker,
-    createProjectFromPicker,
     createFile,
     createFolder,
     saveFile,
@@ -20,7 +19,6 @@
       label: 'File',
       items: [
         { label: 'Open Project\u2026', action: openProjectFromPicker, disabled: () => $busy },
-        { label: 'New Project\u2026', action: createProjectFromPicker, disabled: () => $busy },
         { type: 'separator' },
         { label: 'New File', action: () => createFile(), disabled: () => $busy || !$projectRoot },
         { label: 'New Folder', action: () => createFolder(), disabled: () => $busy || !$projectRoot },

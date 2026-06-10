@@ -8,8 +8,6 @@ export function CreateDirectory(arg1:string):Promise<void>;
 
 export function CreateFile(arg1:string):Promise<void>;
 
-export function CreateProject(arg1:string):Promise<string>;
-
 export function DeletePath(arg1:string):Promise<void>;
 
 export function Greet(arg1:string):Promise<string>;

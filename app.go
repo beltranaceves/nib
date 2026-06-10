@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"nib/internal"
 
@@ -56,25 +55,6 @@ func (a *App) PickProjectFolder(title string) (string, error) {
 	}
 
 	return selectedPath, nil
-}
-
-func (a *App) CreateProject(folderPath string) (string, error) {
-	projectRoot, err := filepath.Abs(folderPath)
-	if err != nil {
-		return "", err
-	}
-
-	info, statErr := os.Stat(projectRoot)
-	if statErr == nil && !info.IsDir() {
-		return "", fmt.Errorf("%s is not a directory", folderPath)
-	}
-
-	if err := os.MkdirAll(projectRoot, 0o755); err != nil {
-		return "", err
-	}
-
-	a.projectRoot = projectRoot
-	return projectRoot, nil
 }
 
 func (a *App) ListEntries(path string) ([]internal.Entry, error) {

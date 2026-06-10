@@ -1,6 +1,6 @@
 import { get } from 'svelte/store'
 import { activeSidebarView, selectedPath } from './stores.js'
-import { saveFile, openProjectFromPicker, createProjectFromPicker, renamePath, deletePath, hideContextMenu } from './file-tree.js'
+import { saveFile, openProjectFromPicker, renamePath, deletePath, hideContextMenu } from './file-tree.js'
 
 const views = ['explorer', 'snippets']
 
@@ -45,7 +45,6 @@ bindings.set('ctrl+i', () => {
 })
 bindings.set('ctrl+s', () => saveFile())
 bindings.set('ctrl+o', () => openProjectFromPicker())
-bindings.set('ctrl+shift+n', () => createProjectFromPicker())
 bindings.set('escape', () => hideContextMenu())
 bindings.set('f2', () => { const p = get(selectedPath); if (p) renamePath(p) })
 bindings.set('delete', () => { const p = get(selectedPath); if (p) deletePath(p) })
