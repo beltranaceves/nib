@@ -65,7 +65,7 @@
             }
           }}
           on:contextmenu={(event) => showContextMenu(event, row.entry)}
-          style={`padding-left: ${0.6 + row.depth * 1.05}rem`}
+          style={`padding-left: ${0.5 + row.depth * 0.8}rem`}
           role="button"
           tabindex="0"
         >

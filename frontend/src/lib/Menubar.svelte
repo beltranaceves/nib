@@ -5,7 +5,6 @@
     selectedPath,
     selectedIsDir,
     dirty,
-    activeSidebarView,
   } from './stores.js'
   import {
     openProjectFromPicker,
@@ -14,6 +13,7 @@
     createFolder,
     saveFile,
   } from './file-tree.js'
+  import { WindowMinimise, WindowToggleMaximise, Quit } from '../../wailsjs/runtime/runtime'
 
   const menus = [
     {
@@ -26,30 +26,7 @@
         { label: 'New Folder', action: () => createFolder(), disabled: () => $busy || !$projectRoot },
         { label: 'Save', action: saveFile, disabled: () => $busy || !$selectedPath || $selectedIsDir || !$dirty, shortcut: '\u2318S' },
         { type: 'separator' },
-        { label: 'Exit', action: () => window.runtime.Quit() },
-      ],
-    },
-    {
-      label: 'Edit',
-      items: [
-        { label: 'Cut', shortcut: '\u2318X', action: () => {} },
-        { label: 'Copy', shortcut: '\u2318C', action: () => {} },
-        { label: 'Paste', shortcut: '\u2318V', action: () => {} },
-        { type: 'separator' },
-        { label: 'Select All', shortcut: '\u2318A', action: () => {} },
-      ],
-    },
-    {
-      label: 'View',
-      items: [
-        {
-          label: 'Toggle Sidebar',
-          action: () => activeSidebarView.update(v => v ? null : 'explorer'),
-          shortcut: '\u2318B',
-        },
-        { type: 'separator' },
-        { label: 'Zoom In', shortcut: '\u2318+', action: () => {} },
-        { label: 'Zoom Out', shortcut: '\u2318-', action: () => {} },
+        { label: 'Exit', action: () => Quit() },
       ],
     },
     {
@@ -100,8 +77,8 @@
           {menu.label}
         </button>
         {#if activeMenu === menu.label}
-          <!-- svelte-ignore a11y_no_static_element_interactions, a11y_click_events_have_key_events -->
-          <div class="menu-dropdown" on:click|stopPropagation>
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <div class="menu-dropdown" on:click|stopPropagation on:keydown={() => {}}>
             {#each menu.items as item}
               {#if item.type === 'separator'}
                 <div class="menu-separator" role="separator"></div>
@@ -126,4 +103,16 @@
   </div>
 
   <div class="menu-status">{$projectRoot || 'No project open'}</div>
+
+  <div class="window-controls">
+    <button class="win-btn win-min" on:click={() => WindowMinimise()} title="Minimize" type="button">
+      <svg width="12" height="12" viewBox="0 0 12 12"><rect x="1" y="5.5" width="10" height="1" fill="currentColor"/></svg>
+    </button>
+    <button class="win-btn win-max" on:click={() => WindowToggleMaximise()} title="Maximize" type="button">
+      <svg width="12" height="12" viewBox="0 0 12 12"><rect x="1.5" y="1.5" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+    </button>
+    <button class="win-btn win-close" on:click={() => Quit()} title="Close" type="button">
+      <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.2"/></svg>
+    </button>
+  </div>
 </header>

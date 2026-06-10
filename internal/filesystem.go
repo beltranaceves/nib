@@ -159,14 +159,6 @@ func RenameDirectory(rootPath, oldPath, newPath string) error {
 	return os.Rename(secureOldPath, secureNewPath)
 }
 
-func MoveFile(rootPath, srcPath, dstPath string) error {
-	return RenameFile(rootPath, srcPath, dstPath)
-}
-
-func MoveDirectory(rootPath, srcPath, dstPath string) error {
-	return RenameDirectory(rootPath, srcPath, dstPath)
-}
-
 func resolvePath(rootPath, targetPath string) (string, error) {
 	rootAbs, err := filepath.Abs(rootPath)
 	if err != nil {

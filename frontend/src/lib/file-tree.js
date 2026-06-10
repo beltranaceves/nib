@@ -11,12 +11,18 @@ import {
   busy,
   statusMessage,
   contextMenu,
+  snippets,
+  frontmatterTitle,
+  frontmatterTags,
 } from './stores.js'
 import { ROOT_FOLDER, normalizePath, joinPath, parentPath, pathIsUnderPath, rewritePath } from './path.js'
 
+
 // ── API helpers ──
 function appApi() {
-  return window?.go?.main?.App
+  /** @type {any} */
+  const w = window
+  return w?.go?.main?.App
 }
 
 function ensureAppApi() {
@@ -26,6 +32,8 @@ function ensureAppApi() {
 }
 
 // ── Derived helpers ──
+
+/** @param {string} path */
 export function isExpanded(path) {
   return get(expandedFolders).includes(path)
 }
@@ -46,14 +54,20 @@ export function resetWorkspaceState() {
   selectedIsDir.set(false)
   selectedContent.set('')
   dirty.set(false)
+  snippets.set([])
+  frontmatterTitle.set('')
+  frontmatterTags.set([])
   hideContextMenu()
 }
 
+/** @param {string} folderPath @param {Entry[]} entries */
 function setFolderCache(folderPath, entries) {
   folderCache.update(cache => ({ ...cache, [folderPath]: entries }))
 }
 
 // ── File tree operations ──
+
+/** @param {string} folderPath */
 export async function loadFolder(folderPath) {
   const normalized = normalizePath(folderPath)
   const cache = get(folderCache)
@@ -67,8 +81,10 @@ export function rebuildVisibleRows() {
   const cache = get(folderCache)
   const expanded = get(expandedFolders)
   const root = get(projectRoot)
+  /** @type {Array<{entry: Entry, depth: number}>} */
   const rows = []
 
+  /** @param {string} folderPath @param {number} depth */
   function appendRows(folderPath, depth) {
     const entries = cache[folderPath] || []
     for (const entry of entries) {
@@ -93,12 +109,14 @@ export async function refreshTree() {
   rebuildVisibleRows()
 }
 
+/** @param {Entry} entry */
 function selectEntry(entry) {
   selectedPath.set(entry.path)
   selectedIsDir.set(entry.isDir)
   hideContextMenu()
 }
 
+/** @param {string} removedPath */
 function clearSelectionIfPathWasRemoved(removedPath) {
   const selPath = get(selectedPath)
   if (selPath === removedPath || pathIsUnderPath(selPath, removedPath)) {
@@ -109,6 +127,7 @@ function clearSelectionIfPathWasRemoved(removedPath) {
   }
 }
 
+/** @param {string} oldPath @param {string} newPath */
 function remapStatePaths(oldPath, newPath) {
   expandedFolders.update(expanded =>
     expanded.map(f => rewritePath(f, oldPath, newPath))
@@ -131,7 +150,7 @@ export async function openProjectFromPicker() {
     await refreshTree()
     statusMessage.set(`Opened project: ${root}`)
   } catch (error) {
-    statusMessage.set(error?.message || String(error))
+    statusMessage.set(String(error))
   } finally {
     busy.set(false)
   }
@@ -160,12 +179,13 @@ export async function createProjectFromPicker() {
     await refreshTree()
     statusMessage.set(`Created project: ${root}`)
   } catch (error) {
-    statusMessage.set(error?.message || String(error))
+    statusMessage.set(String(error))
   } finally {
     busy.set(false)
   }
 }
 
+/** @param {Entry} entry */
 export async function openEntry(entry) {
   selectEntry(entry)
 
@@ -184,7 +204,7 @@ export async function openEntry(entry) {
       }
       rebuildVisibleRows()
     } catch (error) {
-      statusMessage.set(error?.message || String(error))
+      statusMessage.set(String(error))
     } finally {
       busy.set(false)
     }
@@ -193,11 +213,33 @@ export async function openEntry(entry) {
 
   busy.set(true)
   try {
-    selectedContent.set(await ensureAppApi().ReadFile(entry.path))
+    const isMd = entry.path.endsWith('.md') || entry.path.endsWith('.markdown')
+
+    if (isMd) {
+      try {
+        const result = await ensureAppApi().ReadFrontmatter(entry.path)
+        if (result && result.frontmatter) {
+          snippets.set(result.frontmatter.snippets || [])
+          frontmatterTitle.set(result.frontmatter.title || '')
+          frontmatterTags.set(result.frontmatter.tags || [])
+          selectedContent.set(result.body || '')
+        } else {
+          snippets.set([]); frontmatterTitle.set(''); frontmatterTags.set([])
+          selectedContent.set(await ensureAppApi().ReadFile(entry.path))
+        }
+      } catch {
+        snippets.set([]); frontmatterTitle.set(''); frontmatterTags.set([])
+        selectedContent.set(await ensureAppApi().ReadFile(entry.path))
+      }
+    } else {
+      snippets.set([]); frontmatterTitle.set(''); frontmatterTags.set([])
+      selectedContent.set(await ensureAppApi().ReadFile(entry.path))
+    }
+
     dirty.set(false)
     statusMessage.set(`Editing ${entry.path}`)
   } catch (error) {
-    statusMessage.set(error?.message || String(error))
+    statusMessage.set(String(error))
   } finally {
     busy.set(false)
   }
@@ -210,16 +252,32 @@ export async function saveFile() {
 
   busy.set(true)
   try {
-    await ensureAppApi().WriteFile(selPath, get(selectedContent))
+    const isMd = selPath.endsWith('.md') || selPath.endsWith('.markdown')
+
+    if (isMd) {
+      await ensureAppApi().WriteFrontmatter(
+        selPath,
+        {
+          title: get(frontmatterTitle),
+          snippets: get(snippets),
+          tags: get(frontmatterTags),
+        },
+        get(selectedContent),
+      )
+    } else {
+      await ensureAppApi().WriteFile(selPath, get(selectedContent))
+    }
+
     dirty.set(false)
     statusMessage.set(`Saved ${selPath}`)
   } catch (error) {
-    statusMessage.set(error?.message || String(error))
+    statusMessage.set(String(error))
   } finally {
     busy.set(false)
   }
 }
 
+/** @param {string} [targetFolder] */
 export async function createFile(targetFolder) {
   if (!get(projectRoot)) {
     statusMessage.set('Open a project first.')
@@ -242,12 +300,13 @@ export async function createFile(targetFolder) {
     dirty.set(false)
     statusMessage.set(`Created ${filePath}`)
   } catch (error) {
-    statusMessage.set(error?.message || String(error))
+    statusMessage.set(String(error))
   } finally {
     busy.set(false)
   }
 }
 
+/** @param {string} [targetFolder] */
 export async function createFolder(targetFolder) {
   if (!get(projectRoot)) {
     statusMessage.set('Open a project first.')
@@ -266,12 +325,13 @@ export async function createFolder(targetFolder) {
     await refreshTree()
     statusMessage.set(`Created ${folderPath}`)
   } catch (error) {
-    statusMessage.set(error?.message || String(error))
+    statusMessage.set(String(error))
   } finally {
     busy.set(false)
   }
 }
 
+/** @param {string} path */
 export async function renamePath(path) {
   if (!path) return
   const newPath = window.prompt('Rename path', path)?.trim()
@@ -284,12 +344,13 @@ export async function renamePath(path) {
     await refreshTree()
     statusMessage.set(`Renamed ${path}`)
   } catch (error) {
-    statusMessage.set(error?.message || String(error))
+    statusMessage.set(String(error))
   } finally {
     busy.set(false)
   }
 }
 
+/** @param {string} path */
 export async function deletePath(path) {
   if (!path) return
   const confirmed = window.confirm(`Delete ${path}?`)
@@ -305,13 +366,15 @@ export async function deletePath(path) {
     await refreshTree()
     statusMessage.set(`Deleted ${path}`)
   } catch (error) {
-    statusMessage.set(error?.message || String(error))
+    statusMessage.set(String(error))
   } finally {
     busy.set(false)
   }
 }
 
 // ── Context menu ──
+
+/** @param {MouseEvent} event @param {Entry} entry */
 export function showContextMenu(event, entry) {
   event.preventDefault()
   event.stopPropagation()
@@ -323,6 +386,7 @@ export function hideContextMenu() {
   contextMenu.set(null)
 }
 
+/** @param {string} action */
 export function openContextAction(action) {
   const menu = get(contextMenu)
   if (!menu) return
@@ -342,61 +406,4 @@ export function openContextAction(action) {
   }
 }
 
-// ── Global keyboard handler ──
-export function handleWindowKeydown(event) {
-  if (event.key === 'Escape') {
-    hideContextMenu()
-    return
-  }
 
-  const root = get(projectRoot)
-  if (!root) {
-    if (
-      (event.ctrlKey || event.metaKey) &&
-      event.key.toLowerCase() === 'o'
-    ) {
-      event.preventDefault()
-      openProjectFromPicker()
-    }
-    if (
-      (event.ctrlKey || event.metaKey) &&
-      event.shiftKey &&
-      event.key.toLowerCase() === 'n'
-    ) {
-      event.preventDefault()
-      createProjectFromPicker()
-    }
-    return
-  }
-
-  const selPath = get(selectedPath)
-  if (event.key === 'F2' && selPath) {
-    event.preventDefault()
-    renamePath()
-    return
-  }
-  if (event.key === 'Delete' && selPath) {
-    event.preventDefault()
-    deletePath()
-    return
-  }
-  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
-    event.preventDefault()
-    saveFile()
-    return
-  }
-  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'o') {
-    event.preventDefault()
-    openProjectFromPicker()
-    return
-  }
-  if (
-    (event.ctrlKey || event.metaKey) &&
-    event.shiftKey &&
-    event.key.toLowerCase() === 'n'
-  ) {
-    event.preventDefault()
-    createProjectFromPicker()
-    return
-  }
-}

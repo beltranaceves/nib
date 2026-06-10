@@ -17,9 +17,11 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title: "nib",
-		// Width:  1024, // TODO: make this fullscreen?
-		// Height: 768,
+		Title:            "nib",
+		MinWidth:         800,
+		MinHeight:        500,
+		Frameless:        true,
+		WindowStartState: options.Maximised,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

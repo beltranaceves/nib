@@ -26,7 +26,6 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-	runtime.WindowMaximise(a.ctx)
 }
 
 func (a *App) OpenProject(folderPath string) (string, error) {
@@ -145,15 +144,46 @@ func (a *App) RenamePath(oldPath, newPath string) error {
 	return internal.RenameDirectory(projectRoot, oldPath, newPath)
 }
 
-func (a *App) MovePath(srcPath, dstPath string) error {
+// ── Frontmatter bindings ──
+
+func (a *App) ReadFrontmatter(path string) (*internal.FrontmatterWithBody, error) {
+	projectRoot, err := a.requireProjectRoot()
+	if err != nil {
+		return nil, err
+	}
+	return internal.ParseFrontmatterFileWithBody(projectRoot, path)
+}
+
+func (a *App) WriteFrontmatter(path string, data *internal.FrontmatterData, body string) error {
 	projectRoot, err := a.requireProjectRoot()
 	if err != nil {
 		return err
 	}
-	if err := internal.MoveFile(projectRoot, srcPath, dstPath); err == nil {
-		return nil
+	return internal.WriteFrontmatterFile(projectRoot, path, data, body)
+}
+
+func (a *App) AddSnippet(path string, snippet string) error {
+	projectRoot, err := a.requireProjectRoot()
+	if err != nil {
+		return err
 	}
-	return internal.MoveDirectory(projectRoot, srcPath, dstPath)
+	return internal.AddSnippetToFile(projectRoot, path, snippet)
+}
+
+func (a *App) RemoveSnippet(path string, index int) error {
+	projectRoot, err := a.requireProjectRoot()
+	if err != nil {
+		return err
+	}
+	return internal.RemoveSnippetFromFile(projectRoot, path, index)
+}
+
+func (a *App) UpdateSnippet(path string, index int, snippet string) error {
+	projectRoot, err := a.requireProjectRoot()
+	if err != nil {
+		return err
+	}
+	return internal.UpdateSnippetInFile(projectRoot, path, index, snippet)
 }
 
 func (a *App) Greet(name string) string {
