@@ -1,7 +1,9 @@
 <script>
+  import { get } from 'svelte/store'
   import {
     projectRoot, selectedPath, selectedIsDir,
     snippets, frontmatterTitle, frontmatterTags, busy,
+    editorView,
   } from './stores.js'
   import CaptureRow from './CaptureRow.svelte'
 
@@ -84,13 +86,12 @@
         <div class="snippet-row" class:expanded={expandedIndex === i} class:editing={editingIndex === i}
           on:keydown={(e) => {
             if (e.key === 'Enter' && editingIndex !== i) {
-              const ed = document.querySelector('.editor')
-              if (ed) {
-                const s = ed.selectionStart
-                ed.value = ed.value.substring(0, s) + (s > 0 ? '\n' : '') + snippet + '\n' + ed.value.substring(s)
-                ed.selectionStart = ed.selectionEnd = s + snippet.length + 2
-                ed.focus()
-                ed.dispatchEvent(new Event('input', { bubbles: true }))
+              const v = get(editorView)
+              if (v) {
+                const from = v.state.selection.main.head
+                const insert = (from > 0 ? '\n' : '') + snippet + '\n'
+                v.dispatch({ changes: { from, insert }, selection: { anchor: from + insert.length } })
+                v.focus()
               }
             }
           }} role="button" tabindex="0">

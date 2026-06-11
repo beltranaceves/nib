@@ -7,6 +7,8 @@ snippets:
 
       - Why are you acting like that ?
 ---
-# Not only is this not the way to go, i would never allow it
+## This is an H2 heading
 
-- Why are you acting like that ?
+# This is an H1 headin
+
+### And we really can tell :D

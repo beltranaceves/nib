@@ -465,26 +465,68 @@ button {
     margin: 0;
 }
 
-.editor {
+.editor-container {
     flex: 1;
     min-height: 0;
-    width: 100%;
-    resize: none;
-    border: 0;
+    overflow: hidden;
+    position: relative;
+    display: none;
+}
+
+.editor-container.active {
+    display: block;
+}
+
+.editor-container .cm-editor {
+    height: 100%;
+}
+
+.editor-container .cm-editor.cm-focused {
     outline: none;
-    padding: 1rem;
-    background: transparent;
-    color: #e2e8f0;
-    line-height: 1.65;
-    font-size: 1rem;
+}
+
+.editor-container .cm-scroller {
     font-family: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 1rem;
+    line-height: 1.65;
+}
+
+.editor-container .cm-content {
+    caret-color: #60a5fa;
+    color: #e2e8f0;
+}
+
+.editor-container .cm-gutters {
+    background: transparent;
+    border: none;
+    color: #475569;
+}
+
+/* codemirror-live-markdown theme variables */
+:root {
+    --md-heading: #e2e8f0;
+    --md-bold: #f1f5f9;
+    --md-italic: #e2e8f0;
+    --md-link: #60a5fa;
+    --md-code-bg: rgba(148, 163, 184, 0.1);
 }
 
 .editor-empty {
-    margin: auto;
-    max-width: 28rem;
+    flex: 1;
+    min-height: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     padding: 2rem;
+    max-width: 28rem;
+    margin: auto;
+    color: #94a3b8;
+    font-size: 0.82rem;
+}
+
+.editor-empty.active {
+    display: flex;
 }
 
 .context-menu {

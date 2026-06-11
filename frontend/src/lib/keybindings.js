@@ -1,5 +1,5 @@
 import { get } from 'svelte/store'
-import { activeSidebarView, selectedPath } from './stores.js'
+import { activeSidebarView, selectedPath, editorView } from './stores.js'
 import { saveFile, openProjectFromPicker, renamePath, deletePath, hideContextMenu } from './file-tree.js'
 
 const views = ['explorer', 'snippets']
@@ -24,7 +24,7 @@ function cycleView(dir) {
   else activeSidebarView.set(null)
   requestAnimationFrame(() => {
     const v = get(activeSidebarView)
-    if (!v) { document.querySelector('.editor')?.focus(); return }
+    if (!v) { get(editorView)?.focus(); return }
     document.querySelector(`.activity-icon[title="${v.charAt(0).toUpperCase() + v.slice(1)}"]`)?.focus()
   })
 }
@@ -32,7 +32,7 @@ function cycleView(dir) {
 const bindings = new Map()
 
 bindings.set('ctrl+tab', () => {
-  const inEd = document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.closest('.editor-shell')
+  const inEd = document.activeElement?.closest('.cm-editor') || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.closest('.editor-shell')
   inEd ? document.querySelector('.side-panel')?.focus() : cycleView(1)
 })
 bindings.set('ctrl+shift+tab', () => {

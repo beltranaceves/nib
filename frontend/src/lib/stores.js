@@ -37,6 +37,11 @@ export const statusMessage = writable('Open a project to start.')
 /** @type {import('svelte/store').Writable<null|{x:number,y:number,entry:Entry}>} */
 export const contextMenu = writable(null)
 
+// ── Editor ──
+
+/** @type {import('svelte/store').Writable<import('@codemirror/view').EditorView|null>} */
+export const editorView = writable(null)
+
 // ── Frontmatter / Snippets ──
 
 /** @type {import('svelte/store').Writable<string[]>} */

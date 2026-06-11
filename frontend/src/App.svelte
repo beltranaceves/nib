@@ -40,7 +40,7 @@
 
   function onKeydown(event) {
     // Only intercept modifier combos and navigation keys when typing.
-    if (event.target?.tagName === 'TEXTAREA' || event.target?.tagName === 'INPUT') {
+    if (event.target?.closest('.cm-editor') || event.target?.tagName === 'TEXTAREA' || event.target?.tagName === 'INPUT') {
       if (
         !event.ctrlKey && !event.metaKey &&
         event.key !== 'Escape' && event.key !== 'F2' && event.key !== 'Delete'
