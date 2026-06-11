@@ -1,5 +1,17 @@
 # README
 
+## TODOs
+- Bug: ctrl+shift shortcut not working inside focused editor
+- Missing: drag and drop
+- Missing: command palette
+- Missing: insert snippet at cursor, with snippet preview
+- Missing: rendered markdown inside snippets
+- Bug: tab does not behave correctly anywhere (taskbar, snippets, etc)
+- Bug: arrows dont behave correctly anywhere (taskbar, snippets, etc)
+- Missing: alt to focus taskbar
+- Missing: shortcut to toggle sidebar (ctrl+b)
+- Missing: undo/redo
+
 ## About
 
 This is the official Wails Svelte template.

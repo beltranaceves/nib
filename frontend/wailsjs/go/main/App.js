@@ -18,8 +18,8 @@ export function DeletePath(arg1) {
   return window['go']['main']['App']['DeletePath'](arg1);
 }
 
-export function Greet(arg1) {
-  return window['go']['main']['App']['Greet'](arg1);
+export function GetProcessStats() {
+  return window['go']['main']['App']['GetProcessStats']();
 }
 
 export function ListEntries(arg1) {

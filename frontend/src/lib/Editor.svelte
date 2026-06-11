@@ -71,6 +71,7 @@
         EditorView.updateListener.of(update => {
           if (update.docChanged && !syncingFromStore) {
             localDirty = true
+            dirty.set(true)
           }
         }),
         EditorView.domEventHandlers({

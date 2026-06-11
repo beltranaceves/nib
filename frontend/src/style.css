@@ -176,14 +176,88 @@ button {
 }
 
 .menu-status {
-    color: rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 0.75rem;
     font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    max-width: 32rem;
+}
+
+.project-path {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 0 0.75rem;
-    text-align: right;
-    max-width: 20rem;
+    min-width: 4rem;
+}
+
+.process-stats {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-variant-numeric: tabular-nums;
+    cursor: default;
+}
+
+.stat:hover {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* ── Stats hover popup ── */
+.memory-stat {
+    position: relative;
+}
+
+.stats-popup {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 14rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    background: #262249;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    z-index: 200;
+    white-space: nowrap;
+}
+
+.memory-stat:hover .stats-popup,
+.memory-stat:focus-within .stats-popup {
+    display: block;
+}
+
+.popup-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0.25rem 0;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+}
+
+.popup-row + .popup-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.popup-label {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.popup-value {
+    font-variant-numeric: tabular-nums;
+    color: #e2e8f0;
 }
 
 /* ── Window controls (frameless title bar) ── */

@@ -69,3 +69,26 @@ export namespace internal {
 
 }
 
+export namespace main {
+	
+	export class ProcessStats {
+	    memoryMB: number;
+	    uptime: string;
+	    cpuLoad: number;
+	    startupTime: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ProcessStats(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.memoryMB = source["memoryMB"];
+	        this.uptime = source["uptime"];
+	        this.cpuLoad = source["cpuLoad"];
+	        this.startupTime = source["startupTime"];
+	    }
+	}
+
+}
+

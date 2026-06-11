@@ -1,4 +1,5 @@
 <script>
+  import { onMount, onDestroy } from 'svelte'
   import {
     busy,
     projectRoot,
@@ -12,7 +13,28 @@
     createFolder,
     saveFile,
   } from './file-tree.js'
+  import { GetProcessStats } from '../../wailsjs/go/main/App'
   import { WindowMinimise, WindowToggleMaximise, Quit } from '../../wailsjs/runtime/runtime'
+
+  let stats = { memoryMB: 0, uptime: '', cpuLoad: 0, startupTime: '' }
+  let statsInterval
+
+  onMount(() => {
+    fetchStats()
+    statsInterval = setInterval(fetchStats, 5000)
+  })
+
+  onDestroy(() => {
+    clearInterval(statsInterval)
+  })
+
+  async function fetchStats() {
+    try {
+      stats = await GetProcessStats()
+    } catch {
+      // silently ignore — backend might not be ready yet
+    }
+  }
 
   const menus = [
     {
@@ -100,7 +122,20 @@
     {/each}
   </div>
 
-  <div class="menu-status">{$projectRoot || 'No project open'}</div>
+  <div class="menu-status">
+    <span class="project-path">{$projectRoot || 'No project open'}</span>
+    <span class="process-stats">
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <span class="stat memory-stat" on:keydown={() => {}}>
+        &#9679; {stats.memoryMB.toFixed(1)} MB
+        <div class="stats-popup">
+          <div class="popup-row"><span class="popup-label">Uptime</span><span class="popup-value">{stats.uptime}</span></div>
+          <div class="popup-row"><span class="popup-label">CPU load</span><span class="popup-value">{stats.cpuLoad.toFixed(1)}%</span></div>
+          <div class="popup-row"><span class="popup-label">Startup</span><span class="popup-value">{stats.startupTime}</span></div>
+        </div>
+      </span>
+    </span>
+  </div>
 
   <div class="window-controls">
     <button class="win-btn win-min" on:click={() => WindowMinimise()} title="Minimize" type="button">
